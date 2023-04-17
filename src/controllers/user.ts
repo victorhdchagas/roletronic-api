@@ -157,7 +157,19 @@ class User {
     } return false
   }
 
+  async checkUserInPlan({ id: userId, planId }: { id: string, planId: number }, { prisma }: Context) {
+    return await prisma.userPlan.findFirst({
+      where: {
+        userId, planId
+      }
+    })
+  }
+
   async associatePlan({ id, planId }: { id: string, planId: number }, { prisma }: Context) {
+    const userInPlan = await this.checkUserInPlan({ id, planId }, { prisma });
+    if (!!userInPlan) {
+      throw { status: "notOK", message: "User already registered on this plan." }
+    }
     return prisma.userPlan.create({
       data: {
         userId: id,

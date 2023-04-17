@@ -47,18 +47,15 @@ userRouter.put("/", async (req: MyRequest, res) => {
     }
 });
 
-userRouter.put("/plan", async (req: MyRequest, res) => {
+userRouter.put("/plan", async ({ user, body: { planId } }: MyRequest, res) => {
     try {
         const ctrl = new User();
-        const { planId } = req.body;
-        if (!req.user || !planId) throw { error: "notOk", message: "You sent a wrong query." }
+        if (!user || !planId) throw { error: "notOk", message: "You sent a wrong query." }
         const ctx = CreateContext();
-        ctrl.associatePlan({ id: req.user.id, planId }, ctx)
-
+        await ctrl.associatePlan({ id: user.id, planId }, ctx)
         res.json({ status: "ok" })
     } catch (error) {
         res.status(500).send(error)
-
     }
 })
 
