@@ -1,15 +1,19 @@
 import { RoleProduct as PrismaRoleProduct } from '../../prisma/.prisma/prismaclient'
 import { ContextType as Context, ContextType, CreateContext } from "../context"
-import { z } from 'zod'
-import { RoleProductSchema as Schema } from '../types/global'
+import { RolePlanSchema as PlanSchema, RolePlanType, RoleProductType, RoleProductSchema as Schema } from '../types/global'
 
-const RoleProductSchema = Schema()
+// const RoleProductSchema = Schema()
 
 class System {
-    async createProduct(data: z.infer<typeof RoleProductSchema>, ctx: Context): Promise<PrismaRoleProduct> {
-        const validatedData = RoleProductSchema.parse(data)
+    async createProduct(data: RoleProductType, ctx: Context): Promise<PrismaRoleProduct> {
         const createdProduct = ctx.prisma.roleProduct.create({
-            data: validatedData
+            data: data
+        })
+        return await createdProduct;
+    }
+    async createPlan(data: RolePlanType, ctx: Context): Promise<PrismaRoleProduct> {
+        const createdProduct = ctx.prisma.plan.create({
+            data: data
         })
         return await createdProduct;
     }

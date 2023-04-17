@@ -113,14 +113,26 @@ model RoleProduct {
 }
 
 model Plan {
-  id            Int         @id @default(autoincrement())
+  id            Int          @id @default(autoincrement())
   name          String
+  description   String
+  value         Float        @default(0)
   User          User[]
-  Module        RoleProduct @relation(fields: [roleProductId], references: [id])
+  Product       RoleProduct  @relation(fields: [roleProductId], references: [id])
   Rule          PlanRule[]
   roleProductId Int
-  duration      Int? //31 dias.
+  duration      PlanDuration @default(montly) //31 dias.
   deativateAt   DateTime? //Data que o plano é anulado.
+}
+
+enum PlanDuration {
+  day
+  week
+  montly
+  weekly
+  quarter
+  semester
+  year
 }
 
 model PlanRule {
