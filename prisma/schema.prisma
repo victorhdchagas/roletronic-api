@@ -27,8 +27,7 @@ model User {
   // SoldBy         Sale[]    @relation("Sale_user_soldBy")
   // BoughtBy       Sale[]    @relation("Sale_user_createdBy")
   // Plan           Plan[]
-  Plan           Plan?               @relation(fields: [planId], references: [id])
-  planId         Int?
+  Plan           UserPlan[]
 }
 
 model Agenda {
@@ -117,12 +116,23 @@ model Plan {
   name          String
   description   String
   value         Float        @default(0)
-  User          User[]
+  User          UserPlan[]
   Product       RoleProduct  @relation(fields: [roleProductId], references: [id])
   Rule          PlanRule[]
   roleProductId Int
   duration      PlanDuration @default(montly) //31 dias.
   deativateAt   DateTime? //Data que o plano é anulado.
+}
+
+model UserPlan {
+  id           Int       @id @default(autoincrement())
+  createdAt    DateTime  @default(now())
+  deativatedAt DateTime?
+  updatedAt    DateTime  @updatedAt()
+  User         User?     @relation(fields: [userId], references: [id])
+  userId       String?
+  Plan         Plan?     @relation(fields: [planId], references: [id])
+  planId       Int?
 }
 
 enum PlanDuration {

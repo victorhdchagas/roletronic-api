@@ -38,17 +38,19 @@ function exclude<User, Key extends keyof User>(
   return user
 }
 type userType = z.infer<typeof userSchema>;
+type IAuthResponse = {
+  id: string;
+  result: boolean;
+  name: string,
+  email: string,
+  login: string,
+  avatar: string,
+  plan: boolean | null
+}
 class User {
 
-  async auth(data: z.infer<typeof userSchema>, ctx: Context): Promise<{
-    id: string;
-    result: boolean;
-    name: string,
-    email: string,
-    login: string,
-    avatar: string,
-    plan: boolean | null
-  } | null> {
+  async auth(data: z.infer<typeof userSchema>, ctx: Context): Promise<IAuthResponse | null> {
+
     const where = {
       // password:data.password,
       ...(data.email && { email: data.email }),
@@ -155,7 +157,15 @@ class User {
     } return false
   }
 
+  async associatePlan({ id, planId }: { id: string, planId: number }, { prisma }: Context) {
+    return prisma.userPlan.create({
+      data: {
+        userId: id,
+        planId,
+      }
+    })
 
+  }
 }
 
 export default User;
