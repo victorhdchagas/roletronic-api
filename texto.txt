@@ -1,0 +1,15 @@
+Comandos consultados na net
+
+
+docker-compose -d up
+docker-compose down --rmi all
+docker compose --env-file .env up -d
+
+docker 
+
+apt-get update && apt install mariadb-client -y
+npx prisma generate
+npx ts-node prisma/seed.ts
+mysql -h db -uroletronic -pwutachitoranag@2023 roletronic
+
+Será necessário a criação de um bot que rode toda a noite criando novas cobranças para usuários.

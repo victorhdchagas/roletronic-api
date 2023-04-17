@@ -1,0 +1,17 @@
+import User from "../../src/controllers/user";
+import { MockContext, Context, createMockContext } from '../../src/context'
+
+let mockCtx: MockContext
+let ctx: Context
+
+beforeEach(() => {
+    mockCtx = createMockContext()
+    ctx = mockCtx as unknown as Context
+})
+describe("User Creation", () => {
+    it("Should be possible create an user", () => {
+        const userController = new User();
+        expect(1 + 1).toBe(4);
+    })
+
+});

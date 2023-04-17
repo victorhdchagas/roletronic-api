@@ -1,0 +1,186 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = ".prisma/prismaclient"
+}
+
+model User {
+  id             String              @id @default(uuid())
+  name           String
+  email          String              @unique
+  login          String              @unique
+  password       String
+  avatar         String              @default("/public/default.png")
+  plan           Boolean?
+  validatedUser  Boolean             @default(false)
+  Linkbio        LinkBio[]
+  Payments       Payment[]
+  safetyRequests UserSafetyRequest[]
+  // group          Group     @relation(fields: [groupId], references: [id])
+  // groupId        Int
+  // productCreated Product[] @relation("Product_user_createdBy")
+  // productUpdated Product[] @relation("Product_user_updatedBy")
+  // SoldBy         Sale[]    @relation("Sale_user_soldBy")
+  // BoughtBy       Sale[]    @relation("Sale_user_createdBy")
+  // Plan           Plan[]
+  Plan           Plan?               @relation(fields: [planId], references: [id])
+  planId         Int?
+}
+
+model Agenda {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  startAt     DateTime
+  endAt       DateTime
+  LinkBio     LinkBio  @relation(fields: [linkbioId], references: [id])
+  linkbioId   Int
+}
+
+model UserSafetyRequest {
+  id          String            @id @default(uuid())
+  RequestType SafetyRequestType
+  confirm     Boolean           @default(false)
+  startAt     DateTime          @default(now())
+  endAt       DateTime
+  user        User              @relation(fields: [userId], references: [id])
+  userId      String
+}
+
+enum SafetyRequestType {
+  email
+}
+
+model Payment {
+  id          Int         @id @default(autoincrement())
+  user        User        @relation(fields: [userId], references: [id])
+  userId      String
+  createdAt   DateTime    @default(now())
+  price       Float
+  paid        Boolean     @default(false)
+  paymentType PaymentType
+  reference   String?
+}
+
+model LinkBio {
+  id     Int        @id @default(autoincrement())
+  user   User       @relation(fields: [userId], references: [id])
+  userId String     @unique()
+  name   String
+  fields UrlField[]
+  agenda Agenda[]
+}
+
+model UrlField {
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String?
+  value       String
+  from        UrlFieldType
+  Url         LinkBio      @relation(fields: [urlId], references: [id])
+  urlId       Int
+}
+
+enum UrlFieldType {
+  FACEBOOK
+  TWITTER
+  INSTAGRAM
+  SOUNDCLOUD
+  SPOTIFY
+  BANDCAMP
+  YOUTUBE
+  RUMBLE
+  TWITCH
+  BEATPORT
+  NOSTR
+}
+
+enum PaymentType {
+  PIX
+  CREDITCARD
+  MERCADOPAGO
+}
+
+model RoleProduct {
+  id          Int    @id @default(autoincrement())
+  name        String
+  description String
+  Plan        Plan[]
+}
+
+model Plan {
+  id            Int         @id @default(autoincrement())
+  name          String
+  User          User[]
+  Module        RoleProduct @relation(fields: [roleProductId], references: [id])
+  Rule          PlanRule[]
+  roleProductId Int
+  duration      Int? //31 dias.
+  deativateAt   DateTime? //Data que o plano é anulado.
+}
+
+model PlanRule {
+  id          Int    @id @default(autoincrement())
+  Plan        Plan   @relation(fields: [planId], references: [id])
+  description String
+  planId      Int
+}
+
+// model RoleModule {
+//   id   Int    @id @default(autoincrement())
+//   name String
+//   plan Plan[]
+// }
+
+// model Group {
+//   id          Int          @id @default(autoincrement())
+//   name        String
+//   users       User[]
+//   permissions Permission[]
+// }
+
+// model Permission {
+//   id          Int     @id @default(autoincrement())
+//   name        String
+//   description String?
+//   groups      Group[]
+// }
+
+// model Product {
+//   id          Int        @id @default(autoincrement())
+//   name        String
+//   description String?
+//   quantity    Int
+//   price       Float
+//   image       String?
+//   category    Category[]
+//   categoryId  Int
+//   createdBy   User       @relation(fields: [createdById], references: [id], name: "Product_user_createdBy")
+//   createdById Int
+//   updatedBy   User?      @relation(fields: [updatedById], references: [id], name: "Product_user_updatedBy")
+//   updatedById Int?
+//   sales       Sale[]
+// }
+
+// model Category {
+//   id        Int       @id @default(autoincrement())
+//   name      String
+//   product   Product[]
+//   productId Int
+// }
+
+// model Sale {
+//   id         Int     @id @default(autoincrement())
+//   product    Product @relation(fields: [productId], references: [id])
+//   productId  Int
+//   quantity   Int
+//   totalPrice Float
+//   soldBy     User    @relation(fields: [soldById], references: [id], name: "Sale_user_soldBy")
+//   soldById   Int
+//   soldTo     User    @relation(fields: [soldToId], references: [id], name: "Sale_user_createdBy")
+//   soldToId   Int
+// }
