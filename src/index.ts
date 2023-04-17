@@ -10,6 +10,7 @@ import cors from 'cors'
 import { IUserTokenPayload } from "./lib/tokenFactory";
 import { MyRequest } from "./types/global";
 import systemRouter from "./routes/systemRouter";
+import addressRouter from "./routes/addressRouter";
 const port = process.env.NODE_DOCKER_PORT || 3000
 const app = express();
 
@@ -44,6 +45,7 @@ app.use("/pagamento", paymentRouter)
 app.use("/system", systemRouter)
 app.use("/produto", productRouter)
 app.use("/evento", eventRouter)
+app.use("/a", addressRouter)
 
 app.get("*", (req, res) => {
     res.send({ error: "Not found" });

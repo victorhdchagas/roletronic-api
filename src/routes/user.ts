@@ -1,7 +1,6 @@
 import express, { Request } from 'express'
 import User from '../controllers/user';
 import { CreateContext } from '../context';
-import { MailSender } from '../lib/MailSender';
 import Payment from '../controllers/payment';
 import { IUserTokenPayload } from '../lib/tokenFactory';
 const userRouter = express.Router();
