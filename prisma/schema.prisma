@@ -153,31 +153,43 @@ model PlanRule {
 }
 
 model Street {
-  id             Int           @id @default(autoincrement())
-  street         String
-  complement     String?
-  zip            String        @unique @db.VarChar(8)
-  Municipality   Municipality? @relation(fields: [municipalityId], references: [id])
-  municipalityId Int?
+  id         Int       @id @default(autoincrement())
+  street     String
+  complement String?
+  zip        String    @unique @db.VarChar(8)
+  District   District? @relation(fields: [districtId], references: [id])
+  districtId Int?
 }
 
-model Municipality {
+model District {
   id      Int      @id @default(autoincrement())
   name    String   @db.VarChar(300)
-  ddd     String   @db.VarChar(3)
-  ibge    String   @db.VarChar(15)
+  ddd     String?  @db.VarChar(3)
   streets Street[]
-  State   State?   @relation(fields: [stateId], references: [id])
-  stateId Int?
+  City    City     @relation(fields: [cityId], references: [id])
+  cityId  Int
+
+  @@unique([name, cityId])
+}
+
+model City {
+  id          Int        @id @default(autoincrement())
+  name        String     @db.VarChar(300)
+  ddd         String?    @db.VarChar(3)
+  ibge        String?    @db.VarChar(15)
+  stateId     Int
+  State       State      @relation(fields: [stateId], references: [id])
+  Districties District[]
 
   @@unique([name, stateId])
 }
 
 model State {
-  id             Int            @id @default(autoincrement())
-  name           String         @unique @db.VarChar(300)
-  uf             String         @unique @db.VarChar(2)
-  municipalities Municipality[]
+  id     Int     @id @default(autoincrement())
+  name   String  @unique @db.VarChar(300)
+  uf     String  @unique @db.VarChar(2)
+  ibge   String? @db.VarChar(15)
+  Cities City[]
 }
 
 // model RoleModule {

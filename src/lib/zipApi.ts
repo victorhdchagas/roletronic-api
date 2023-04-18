@@ -1,4 +1,6 @@
 import fetch from 'node-fetch';
+import { IAddressWithoutDBDTO } from '../controllers/address';
+import estados from './estados'
 
 export type IViaCepDTO = {
     "cep": string,
@@ -15,7 +17,7 @@ export type IViaCepDTO = {
 }
 
 type defaultReturingMessage = {
-    data?: IViaCepDTO,
+    data?: IAddressWithoutDBDTO,
     status?: "ok" | "notOk",
     message?: string,
     stack?: unknown
@@ -23,6 +25,21 @@ type defaultReturingMessage = {
 
 export class ViaCep {
     private endpoint = "https://viacep.com.br/ws/"
+
+    static convert(data: IViaCepDTO): IAddressWithoutDBDTO {
+        const state = estados.filter(estado => estado.sigla == data.uf.toUpperCase())[0]
+        const toReturn: IAddressWithoutDBDTO = {
+            zip: data.cep.split("-").join(""),
+            city: data.localidade,
+            state: state.nome,
+            uf: data.uf,
+            street: data.logradouro,
+            district: data.bairro,
+            cityIbge: data.ibge,
+            stateIbge: data.ibge
+        }
+        return toReturn;
+    }
     /**
      *
      */
@@ -34,10 +51,7 @@ export class ViaCep {
             const toReturn = await (await fetch(this.endpoint.concat(cep).concat("/json"))).json() as IViaCepDTO
             if (toReturn.erro) throw "Cep não encontrado"
             return {
-                data: {
-                    ...toReturn,
-                    cep: toReturn.cep.split("-").join(""),
-                }, status: "ok"
+                data: ViaCep.convert(toReturn), status: "ok"
             }
         } catch (error) {
             return { status: "notOk", stack: error }
