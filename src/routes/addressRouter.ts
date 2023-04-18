@@ -11,11 +11,11 @@ const addressRouter = express.Router();
 
 addressRouter.post("/cep", async (req, res) => {
     try {
-        if (!req.body.cep || !cepSchema.parse(req.body.cep)) throw { status: "notOk", message: "Cep inválido" }
+        if (!req.body.cep || !cepSchema.parse(req.body.cep)) throw "Cep inválido"
         const ctx = CreateContext();
         const ctrl = new Address()
         const dbCep = await ctrl.streetFind({ zip: req.body.cep }, ctx)
-        if (dbCep) return res.json({ status: "ok", data: dbCep })
+        if (dbCep.id) return res.json({ status: "ok", data: dbCep })
         const viaCepResponse = await new ViaCep().find(req.body.cep)
         if (viaCepResponse.data) {
             const toReturn = await ctrl.createStreetViaCep(viaCepResponse.data, ctx);

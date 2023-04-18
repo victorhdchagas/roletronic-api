@@ -165,15 +165,17 @@ model Municipality {
   id      Int      @id @default(autoincrement())
   name    String   @db.VarChar(300)
   ddd     String   @db.VarChar(3)
-  ibge    String   @unique @db.VarChar(15)
+  ibge    String   @db.VarChar(15)
   streets Street[]
   State   State?   @relation(fields: [stateId], references: [id])
   stateId Int?
+
+  @@unique([name, stateId])
 }
 
 model State {
   id             Int            @id @default(autoincrement())
-  name           String         @db.VarChar(300)
+  name           String         @unique @db.VarChar(300)
   uf             String         @unique @db.VarChar(2)
   municipalities Municipality[]
 }

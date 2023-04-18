@@ -62,7 +62,8 @@ class User {
       });
       if (await bcrypt.compareSync(data.password, user.password)) {
         // await ctx.prisma.$disconnect()
-        return { login: user.login, name: user.name, result: true, id: user.id, plan: user.plan, email: data.email, avatar: data.avatar }
+        console.log(user.avatar)
+        return { login: user.login, name: user.name, result: true, id: user.id, plan: user.plan, email: user.email, avatar: user.avatar }
       }
       else return null;
 
