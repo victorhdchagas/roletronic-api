@@ -28,6 +28,8 @@ model User {
   // BoughtBy       Sale[]    @relation("Sale_user_createdBy")
   // Plan           Plan[]
   Plan           UserPlan[]
+  UserAddress    UserAddress[]
+  Event          Event[]
 }
 
 model Agenda {
@@ -153,12 +155,14 @@ model PlanRule {
 }
 
 model Street {
-  id         Int       @id @default(autoincrement())
-  street     String
-  complement String?
-  zip        String    @unique @db.VarChar(8)
-  District   District? @relation(fields: [districtId], references: [id])
-  districtId Int?
+  id          Int            @id @default(autoincrement())
+  street      String
+  complement  String?
+  zip         String         @unique @db.VarChar(8)
+  District    District?      @relation(fields: [districtId], references: [id])
+  districtId  Int?
+  Events      EventAddress[]
+  UserAddress UserAddress[]
 }
 
 model District {
@@ -190,6 +194,54 @@ model State {
   uf     String  @unique @db.VarChar(2)
   ibge   String? @db.VarChar(15)
   Cities City[]
+}
+
+model Event {
+  id             Int          @id @default(autoincrement())
+  name           String       @db.VarChar(100)
+  description    String       @db.Text
+  image          String
+  startDate      DateTime
+  endDate        DateTime?
+  enabled        Boolean
+  userId         String
+  oneTimePayment Boolean      @default(true)
+  eventAddressId Int          @unique
+  systemUrl      String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  createdby      User?        @relation(fields: [userId], references: [id])
+  address        EventAddress @relation(fields: [eventAddressId], references: [id])
+  EventPrice     EventPrice[]
+}
+
+model EventPrice {
+  id       Int     @id @default(autoincrement())
+  name     String?
+  value    Float
+  quantity Int
+  Event    Event   @relation(fields: [eventId], references: [id])
+  eventId  Int
+}
+
+model EventAddress {
+  id         Int     @id @default(autoincrement())
+  complement String?
+  number     String  @db.VarChar(100)
+  streetId   Int
+  Event      Event?
+  Street     Street  @relation(fields: [streetId], references: [id])
+}
+
+model UserAddress {
+  id         Int     @id @default(autoincrement())
+  complement String
+  number     String  @db.VarChar(100)
+  eventId    Int
+  streetId   Int
+  userId     String?
+  User       User?   @relation(fields: [userId], references: [id])
+  Street     Street  @relation(fields: [streetId], references: [id])
 }
 
 // model RoleModule {

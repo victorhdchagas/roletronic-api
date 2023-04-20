@@ -1,6 +1,5 @@
 import express, { NextFunction, Request } from 'express'
 import { CreateContext } from '../context';
-import Product from '../controllers/product';
 import { ViaCep } from '../lib/zipApi';
 import Address from '../controllers/address';
 import { cepSchema } from '../types/global';

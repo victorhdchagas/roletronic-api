@@ -29,29 +29,6 @@ const PlanZodObject = z.object({
     deativateAt: z.date().optional()
 })
 
-const streetZodObject = z.object({
-    id: z.number().optional(),
-    street: z.string().trim().min(1).max(300),
-    zip: z.string().trim().min(8).max(9).transform(zip => zip.split("-").join("")),
-    number: z.string().trim().min(1).optional(),
-    complement: z.string().trim().optional(),
-    municipalityId: z.number().min(1),
-});
-
-const municipalityZodObject = z.object({
-    id: z.number().optional(),
-    name: z.string().trim().min(1).max(300),
-    ddd: z.string().trim().min(2).max(3).optional().transform(ddd => ddd?.padStart(3, "0")),
-    ibge: z.string().optional(),
-    stateId: z.number().min(1),
-})
-
-const stateZodObject = z.object({
-    id: z.number().optional(),
-    name: z.string().trim().min(1).max(300),
-    uf: z.string().trim().min(2).max(2),
-})
-
 export const cepSchema = z.string().refine((value) => /^[0-9]{8}$/.test(value), { message: "CEP inválido" })
 
 export const RolePlanSchema = () => PlanZodObject
