@@ -210,7 +210,7 @@ model Event {
   systemUrl      String?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
-  createdby      User?        @relation(fields: [userId], references: [id])
+  createdBy      User?        @relation(fields: [userId], references: [id])
   address        EventAddress @relation(fields: [eventAddressId], references: [id])
   EventPrice     EventPrice[]
 }

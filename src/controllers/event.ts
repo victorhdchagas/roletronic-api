@@ -6,7 +6,6 @@ import { IEventCreateDTO } from '../types/modelInterface';
 
 class Event {
     async create(eventCreateDto: IEventCreateDTO, userId: string, ctx: Context): Promise<boolean> {
-        console.log(userId)
         const event = await ctx.prisma.event.create({
             data: {
                 name: eventCreateDto.title,
@@ -14,7 +13,7 @@ class Event {
                 enabled: false,
                 startDate: eventCreateDto.startDate,
                 endDate: eventCreateDto.endDate ? eventCreateDto.endDate : null,
-                createdby: {
+                createdBy: {
                     connect: {
                         id: userId
                     }
@@ -37,11 +36,79 @@ class Event {
 
     async getAll(ctx: Context) {
         return await ctx.prisma.event.findMany({
-            include: {
-                address: true,
-                createdby: true,
-                EventPrice: true
+            select: {
+                name: true,
+                id: true,
+                image: true,
+                oneTimePayment: true,
+                startDate: true,
+                endDate: true,
+                // address: true,
+                createdBy: {
+                    select: {
+                        id: true,
+                        login: true
+                    }
+                },
+                EventPrice: {
+                    select: {
+                        value: true,
+                        quantity: true,
+                        id: true,
+                    }
+                },
+
+            },
+
+        })
+    }
+
+    async getById(ctx: Context, id: number, isAdmin: boolean = false) {
+        return await ctx.prisma.event.findFirst({
+            select: {
+                name: true,
+                id: true,
+                image: true,
+                oneTimePayment: true,
+                startDate: true,
+                endDate: true,
+                address: {
+                    include: {
+                        Street: {
+                            include: {
+                                District: {
+                                    include: {
+                                        City: {
+                                            include: {
+                                                State: true
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                createdBy: {
+                    select: {
+                        id: true,
+                        login: true
+                    }
+                },
+                EventPrice: {
+                    select: {
+                        value: true,
+                        quantity: true,
+                        id: true,
+                    }
+                },
+
+            },
+            where: {
+                id,
+                ...(!isAdmin ? { enabled: true } : {})
             }
+
         })
     }
 }

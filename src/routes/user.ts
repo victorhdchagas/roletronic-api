@@ -3,6 +3,8 @@ import User from '../controllers/user';
 import { CreateContext } from '../context';
 import Payment from '../controllers/payment';
 import { IUserTokenPayload } from '../lib/tokenFactory';
+import httpStatus from 'http-status';
+import { checkAdm } from '../lib/requestUtils';
 const userRouter = express.Router();
 
 
@@ -101,6 +103,13 @@ userRouter.get("/", async (req, res) => {
     }
 })
 
+userRouter.get("/check", (req, res) => {
+    try {
+        return res.status(200).json({ status: "ok", data: checkAdm(req.user?.login) })
+    } catch (error) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).send()
+    }
+})
 
 
 export default userRouter;

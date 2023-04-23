@@ -3,6 +3,7 @@ import { CreateContext } from '../context';
 import { EventCreateDTOSchema } from '../types/modelSchema';
 import httpStatus from 'http-status';
 import Event from '../controllers/event';
+import { checkAdm } from '../lib/requestUtils';
 const eventRouter = express.Router();
 
 
@@ -44,6 +45,21 @@ eventRouter.get("/", async (req, res) => {
         if (!req.user) return res.status(httpStatus.UNAUTHORIZED).json({ status: "notOk", message: "Authentication required" })
 
         const toReturn = await ctrl.getAll(ctx);
+        return res.status(200).json({ status: "ok", data: toReturn })
+    } catch (error) {
+        console.error(error)
+        res.status(500).send(error)
+    }
+})
+eventRouter.get("/buscar/:id", async (req, res) => {
+    try {
+        const ctrl = new Event();
+        const ctx = CreateContext();
+        //@ts-ignore
+        if (!req.user) return res.status(httpStatus.UNAUTHORIZED).json({ status: "notOk", message: "Authentication required" })
+        if (!req.params.id) return res.status(httpStatus.PARTIAL_CONTENT).json({ status: "notOk", message: "Which id to find?" })
+
+        const toReturn = await ctrl.getById(ctx, parseInt(req.params.id as string), checkAdm(req.user.login));
         return res.status(200).json({ status: "ok", data: toReturn })
     } catch (error) {
         console.error(error)
